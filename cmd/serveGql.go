@@ -1,6 +1,7 @@
 package cmd
 
 import (
+	"github.com/arieefrachman/go-graphql-example/gql"
 	"github.com/graphql-go/graphql"
 	handlerGql "github.com/graphql-go/handler"
 	"github.com/spf13/cobra"
@@ -14,50 +15,18 @@ var serveGql = &cobra.Command{
 	Short: "Serve your GraphQL server",
 	Long: `I've no idea :p'`,
 	Run: func(cmd *cobra.Command, args []string) {
-		type Employee struct {
-			Name string `json:"name"`
-			Address string `json:"address"`
-		}
-
-		var employees = []Employee{
-			{
-				Name:    "Arif",
-				Address: "Jakarta",
-			},
-			{
-				Name:    "Teguh",
-				Address: "Jakarta",
-			},
-		}
-
-		var EmployeeType = graphql.NewObject(graphql.ObjectConfig{
-			Name: "Employee",
-			Fields: graphql.Fields{
-				"name": &graphql.Field{Type: graphql.String},
-				"address": &graphql.Field{Type: graphql.String},
-			},
-		})
+		resolver := gql.NewQueryResolver()
 
 		var QueryType = graphql.NewObject(graphql.ObjectConfig{
 			Name: "Query",
 			Fields: graphql.Fields{
-				"employees": &graphql.Field{
-					Type: graphql.NewList(EmployeeType),
-					Resolve: func(p graphql.ResolveParams) (interface{}, error) {
-						return employees, nil
-					},
-				},
-				"hello": &graphql.Field{
-					Type: graphql.String,
-					Resolve: func(p graphql.ResolveParams) (interface{}, error) {
-						return "hello world", nil
-					},
+				"person": &graphql.Field{
+					Type: graphql.NewList(gql.PersonType),
+					Resolve: resolver.ListPerson,
 				},
 			},
 		})
 
-
-		//rootQuery := graphql.ObjectConfig{Name: "RootQuery", Fields: fields}
 		schemaConfig := graphql.SchemaConfig{Query: QueryType}
 
 		schema, err := graphql.NewSchema(schemaConfig)
