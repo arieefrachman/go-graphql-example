@@ -1,3 +1,3 @@
 database:
   dialect: 'postgres'
-  descriptors: 'host=localhost user=postgres password=welcome1 port=5432 dbname=bareksa_invoice sslmode=disable'
+  descriptors: 'host=localhost user=postgres password=secret port=5432 dbname=mydb sslmode=disable'
