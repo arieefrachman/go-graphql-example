@@ -16,11 +16,10 @@ var serveGql = &cobra.Command{
 	Long: `I've no idea :p'`,
 	Run: func(cmd *cobra.Command, args []string) {
 		resolver := gql.NewQueryResolver()
-
 		var QueryType = graphql.NewObject(graphql.ObjectConfig{
 			Name: "Query",
 			Fields: graphql.Fields{
-				"person": &graphql.Field{
+				"persons": &graphql.Field{
 					Type: graphql.NewList(gql.PersonType),
 					Resolve: resolver.ListPerson,
 				},
