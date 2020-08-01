@@ -1,12 +1,11 @@
 package infrastructures
 
 import (
-	"database/sql"
 	"github.com/gocraft/dbr/v2"
-	"github.com/spf13/viper"
+	_ "github.com/lib/pq"
+
 	"log"
 	"os"
-	"time"
 )
 
 type ISQLConnection interface {
@@ -14,12 +13,10 @@ type ISQLConnection interface {
 }
 
 type SQLConnection struct {
-	DB *sql.DB
+	Connection *dbr.Connection
 }
 
-var dbConnection *dbr.Connection
-
-func createConnection(dialect string, descriptors string, maxConn, maxIdle int) *dbr.Connection{
+func CreateConnection(dialect string, descriptors string, maxConn, maxIdle int) *dbr.Connection{
 	conn, err := dbr.Open(dialect, descriptors, nil)
 
 	if err != nil {
@@ -34,15 +31,6 @@ func createConnection(dialect string, descriptors string, maxConn, maxIdle int) 
 }
 
 func (s *SQLConnection) Connect() *dbr.Session{
-	if dbConnection == nil {
-		dbConnection = createConnection(
-			viper.GetString("database.dialect"),
-			viper.GetString("database.descriptors"),
-			viper.GetInt("database.max_conn"),
-			viper.GetInt("database.max_idle"))
-	}
-
-	session := dbConnection.NewSession(nil)
-	session.Timeout = 5 * time.Second
+	session := s.Connection.NewSession(nil)
 	return session
 }
